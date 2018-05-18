@@ -1,0 +1,33 @@
+﻿<div class="container">
+    <div class="title">
+        <p class="titletext left">Add A New Scribble</p>
+    </div>
+    <div class="row">
+        <p>Add a new Scribble and share your art to the community!  Your art doesn't have to be final, and it could well be just a <b>Work-In-Progress (WIP)</b>.  That's the idea behind Scribble, you can 
+            always add later revisions to your art and keep track of how you improved your masterpiece.  Just fill in the form below and you should be on your way!</p>   
+        <p>Just remember, you will be able to add a maximum of <b>5</b> versions for this Scribble.</p>  
+        <form action="/scribble/add" enctype="multipart/form-data" method="post"  data-validate="parsley">
+            <table class="table-add">
+                <tr><td width="30%"><label for="title">Title:</label></td>
+                    <td width="70%"><input type="text" id="title" name="title" class="form-text" style="width:400px;" data-required="true"/></td>
+                </tr>
+                <tr><td><label for="description">Description:</label></td>
+                    <td><textarea id="description" name="description" class="form-description" style="width:350px;" data-required="true"></textarea></td>
+                </tr>
+                <tr><td><label for="file">Upload Image:</label> </td>
+                    <td> <div class="fileinputs">
+                            <input type="file" name="file" id="file" class="file"/> 
+                            <div class="fakefile">
+                                <input type="button" value="Select file" id="button_select" class="button green left" />
+                                <div id="selectedfile" class="smalltext right"></div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr><td></td>
+                    <td><input type="submit" value="Save Scribble" class="button blue"/> </td>
+                </tr>
+            </table>                                             
+        </form>
+    </div>
+</div>

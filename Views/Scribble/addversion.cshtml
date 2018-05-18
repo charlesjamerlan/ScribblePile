@@ -1,0 +1,32 @@
+﻿@model scribble.Models.Scribble
+<div class="container">
+    <div class="title">
+        <p class="titletext left">Add A New Version</p>
+    </div>
+    <div class="row">
+        <p>Add a new version to your existing Scribble by simply uploading a new image.  Make sure to enter a description and let other Scribblers know what changes you did!  You can add up to a maximum of <b>5</b> versions per Scribble.</p>        
+        <p>You currently have <b>@Model.versions.Count</b> versions uploaded for <b>@Model.title</b>.</p>        
+        <form action="/scribble/@Model.id/addversion" enctype="multipart/form-data" method="post" data-validate="parsley">
+            <table class="table-add">
+                <tr><td width="30%">
+                    <label for="description">Description:</label>
+                    </td>
+                    <td width="70%"><textarea id="description" name="description" class="form-description" style="width:350px;" data-required="true"></textarea></td>
+                </tr>
+                <tr><td><label for="file">Image:</label> </td>
+                    <td> <div class="fileinputs">
+                            <input type="file" name="file" id="file" class="file"/> 
+                            <div class="fakefile">
+                                <input type="button" value="Select file" id="button_select" class="button green left" />
+                                <div id="selectedfile" class="smalltext right"></div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr><td></td>
+                    <td><input type="submit" value="Add Version" class="button blue"/> </td>
+                </tr>
+            </table>                                             
+        </form>
+    </div>
+</div>

@@ -1,0 +1,38 @@
+﻿@model scribble.Models.User
+<div class="container">
+    <div class="title">
+        <p class="titletext left">Your Profile</p>
+    </div>
+    <div class="row">
+        <p>Edit your profile by using the form below.</p>   
+        <form action="/user/@Model.id/edit" enctype="multipart/form-data" method="post">
+            <table class="table-add">
+                <tr><td width="30%"><label for="title">First Name:</label></td>
+                    <td width="70%"><input type="text" id="firstname" name="firstname" class="form-text" value="@Model.firstname" style="width:400px;"/></td>
+                </tr>
+                <tr><td><label for="title">Last Name:</label></td>
+                    <td><input type="text" id="lastname" name="lastname" class="form-text" value="@Model.lastname" style="width:400px;"/></td>
+                </tr>
+                <tr><td><label for="title">Email Address:</label></td>
+                    <td><input type="text" id="email" name="email" class="form-text" value="@Model.email" style="width:400px;"/></td>
+                </tr>
+                <tr><td><label for="description">Biography:</label></td>
+                    <td><textarea id="biography" name="biography" class="form-description" style="width:350px;">@Model.biography</textarea></td>
+                </tr>
+                <tr><td><label for="file">Upload Image:</label> </td>
+                    <td> <div class="fileinputs">
+                            <input type="file" name="file" id="file" class="file"/> 
+                            <div class="fakefile">
+                                <input type="button" value="Select file" id="button_select" class="button green left" />
+                                <div id="selectedfile" class="smalltext right"></div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr><td></td>
+                    <td><input type="submit" value="Save Changes" class="button blue"/> </td>
+                </tr>
+            </table>                                             
+        </form>
+    </div>
+</div>

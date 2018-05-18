@@ -1,0 +1,91 @@
+﻿@using scribble.Common
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>ScribblePile</title>
+    <link rel="stylesheet" type="text/css" href="/Css/style.css?id=@DateTime.Now.Second">
+    <link rel="stylesheet" type="text/css" href="/Css/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/Css/jquery.fancybox.css">
+    <link href='https://fonts.googleapis.com/css?family=Oswald|Source+Sans+Pro:300,400' rel='stylesheet' type='text/css'>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script src="/Scripts/moment.min.js"></script>
+    <script src="/Scripts/parsley.js"></script>
+    <script src="/Scripts/jquery.fancybox.js"></script>
+    <script>
+        function scrollToAnchor(aid) {
+            var aTag = $("a[name='" + aid + "']");
+            $('html,body').animate({ scrollTop: aTag.offset().top - 20 }, 'slow');
+        }
+
+        function jumpTo(url) {
+            location.href = url;
+        }
+
+        $(function () {
+            $('.date').each(function () {
+                var d = $(this).html();
+                $(this).html(moment(d).fromNow());
+            });
+
+            var a = $('#button_select');
+            var f = $('#file');
+            a.click(function () {
+                f.click();
+            });
+            f.change(function () {
+                $('#selectedfile').html($('#file').val().replace("C:\\fakepath\\", ""));
+            });
+
+            $('.lb').fancybox({
+                openEffect: 'elastic',
+                closeEffect: 'elastic'
+            });
+        });
+
+        //$(window).load(function () {
+        //    $("#slideshow").each(function () {
+        //        $this = $(this);
+        //        var height = $('.active').css('height');
+        //        var width = $('.active').css('width');
+        //        $this.height(height);
+        //        $this.width(width);
+        //        $('#art_container').addClass('current');
+        //    });
+        //});
+
+    </script>
+</head>
+<body>
+    <div id="main">
+        <div id="header">
+            <div id="header-container">
+                <img src="/images/logo.png" class="logo" />
+                <div id="menu">
+                    <ul>
+                    @if (Utilities.IsAuthenticated())
+                    {
+                        var u = Utilities.GetLoggedInUser();
+                        <li><a href="/user/@u.id">@u.username</a></li>
+                        <li><a href="/scribble/add">add</a></li>
+                        <li><a href="/login/logout">logout</a></li>
+                    }
+                    else
+                    {
+                        <li>sign up</li>
+                        <li><a href="/login?r=@Request.CurrentExecutionFilePath">login</a></li>                        
+                    }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="body">
+            @RenderBody()
+        </div>
+        <div id="footer">
+            @DateTime.Now.Year NoodleBit creative.  All Rights Reserved.
+        </div>
+    </div>
+</body>
+</html>

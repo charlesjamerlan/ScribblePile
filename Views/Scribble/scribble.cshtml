@@ -1,0 +1,197 @@
+﻿@model scribble.Controllers.ScribbleController.ScribbleControllerModel
+<script>
+    var refreshIntervalId;
+
+    function slideSwitch() {
+        var $active = $('#slideshow img.active');
+
+        if ($active.length == 0) {
+            $active = $('#slideshow img:last');
+        }
+        
+        var $next = $active.next().length ? $active.next()
+            : $('#slideshow img:first');
+
+        $active.addClass('last-active');
+
+        $next.css({ opacity: 0.0 })
+            .addClass('active')
+            .animate({ opacity: 1.0 }, 1000, function () {
+                $active.removeClass('active last-active');
+            });
+
+        if ($active.next().length == 0) {
+            clearInterval(refreshIntervalId);
+            $('#button_play').removeAttr('disabled');
+            console.log('finished');
+        }
+    }
+
+    function savelike() {
+        $('#icon-like').attr('src', '/images/icon_liked.png').removeClass('animated flipInX').addClass('animated wobble').attr("onClick", "unlike()");
+        $('#likecount').html(($('#likecount').html() - 0) + 1);
+        $.get('/scribble/@Model.scribble.id/liked', function (data) {
+            console.log(data);
+        });
+    }
+
+    function unlike() {
+        $('#icon-like').attr('src', '/images/icon_like.png').removeClass('animated wobble').addClass('animated flipInX').attr("onClick", "savelike()");;
+        $('#likecount').html(($('#likecount').html() - 0) - 1);
+        $.get('/scribble/@Model.scribble.id/unlike', function (data) {
+            console.log(data);
+        });
+    }
+
+    function playProgress() {
+        $('#button_play').attr('disabled', 'disabled');
+        refreshIntervalId = setInterval("slideSwitch()", 1500);        
+    }
+</script>
+<div class="container left">
+    <div class="title-main">
+        <div class="left">
+            <p class="titletext">@Model.scribble.title</p>
+            <p class="smalltext" style="color:#FFF;">@(Model.scribble.versions.Count() > 1 ? "Updated" : "Added") <span class="date">@Model.scribble.versions.First().timestamp</span></p>
+        </div>
+        <div class="likebox">
+            <img src="/images/@(Model.is_liked ? "icon_liked.png" : "icon_like.png")" id="icon-like" class="btn-like" onclick="@(Model.is_liked ? "unlike()" : "savelike()");" />
+        </div>
+    </div>
+    <div class="description hide">@Model.scribble.description</div>
+    <div class="art current" id="art_container">
+            <div id="slideshow">
+                <a class="lb" href="/scribbles/@Model.scribble.versions.First().filename"  title="@Model.scribble.title" rel="gallery_@Model.scribble.id">
+                <img src="/scribbles/@Model.scribble.versions.First().filename" border="0" />
+                </a>                                            
+            </div>        
+        @foreach (scribble.Models.Version version in Model.scribble.versions.Skip(1).Reverse())
+        {            
+            <img src="/scribbles/@version.filename" class="hide"/>    
+        }
+@*        @if (Model.scribble.versions.Count() > 1){
+            <div class="version-description">
+                @Model.scribble.versions.First().description
+            </div>
+        }*@
+    </div>    
+    @if (Model.scribble.versions.Count() > 1){
+    <div class="title">
+        <p class="titletext left">Previous Versions</p>
+        <input type="button" onclick="playProgress();" value="See Progression" id="button_play" class="button blue right hide" />
+    </div>
+    <div class="previous">
+        @foreach (scribble.Models.Version version in Model.scribble.versions.Skip(1))
+        {            
+            <div class="row">
+                <div class="shadow">
+                    <a class="lb" href="/scribbles/@version.filename" title="@Model.scribble.title" rel="gallery_@Model.scribble.id">
+                        <img src="/scribbles/@version.filename" border="0" />
+                    </a>
+                </div>
+                <div class="left">
+                    <p>@version.description</p>
+                    <p class="smalldate">added <span class="date">@version.timestamp</span></p>
+                </div>
+            </div>
+        }
+    </div>
+    }
+    <div id="comments-container">
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'scribblepile'; // required: replace example with your forum shortname
+            var disqus_url = 'http://scribblepile.com/@Model.scribble.id';        
+            var urlArray = [];
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function () {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+
+            var disqus_config = function () {
+                // The generated payload which authenticates users with Disqus
+                this.page.remote_auth_s3 = '@Model.disqus_sso_payload';
+                this.page.api_key = 'vCAcQHLrPFUFytsjbLPstYne5Ydlr5l2HqQVaaUj0lr0jWExt4Gdg7wiy3yz4CT4';
+                this.sso = {
+                    name: "ScribblePile",
+                    button: "/images/disqus_sso_button.png",
+                    icon: "/images/favicon.png",
+                    url: "/login?f=sso",
+                    logout: "/logout",
+                    width: "800",
+                    height: "400"
+                };
+            }
+
+            $(function () {
+                urlArray.push('link:' + disqus_url);
+                $.ajax({
+                    type: 'GET',
+                    url: "https://disqus.com/api/3.0/threads/set.jsonp",
+                    data: { api_key: 'vCAcQHLrPFUFytsjbLPstYne5Ydlr5l2HqQVaaUj0lr0jWExt4Gdg7wiy3yz4CT4', forum: disqus_shortname, thread: urlArray },
+                    cache: false,
+                    dataType: 'jsonp',
+                    success: function (result) {
+
+                        for (var i in result.response) {
+
+                            var countText = " Comments";
+                            var count = result.response[i].posts;
+
+                            if (count == 1)
+                                countText = " Comment";
+
+                        }
+
+                        $('#commentcount').html('<p><b>' + count + '</b></p><p>' + countText + '</p>');
+                    }
+                });
+            });
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+    </div>    
+</div>
+<div class="sidebar right">
+    <div class="wrapper">
+        <div class="author">
+            <img src="/Users/@String.Join("",Model.scribble.author.id,".jpg")" class="author-icon left" />        
+            <div class="left author-name">
+                <p><a href="/user/@Model.scribble.author.id">@Model.scribble.author.username</a></p>
+                <p>@Model.scribble.author.firstname @Model.scribble.author.lastname</p>
+            </div>
+        </div>
+        @if(Model.is_owner){  
+            <div class="author-controls">
+                @if (Model.scribble.versions.Count() < 5)
+                {
+                    <input type="button" onclick="location.href='/scribble/@Model.scribble.id/addversion';" value="Add Version" id="button_add_version" class="button green" />
+                }            
+                <input type="button" onclick="playProgress();" value=" Edit " id="button_edit" class="button yellow" />
+                <input type="button" onclick="playProgress();" value="Delete" id="button_delete" class="button red" />
+            </div>
+        }
+    </div>
+    <div class="info">        
+         @Model.scribble.author.biography
+    </div>
+    <div class="title">About This Scribble</div>
+    <div class="info">        
+        @Model.scribble.description
+    </div>
+    <div class="title">About Latest Version</div>
+    <div class="info">        
+        @Model.scribble.versions.First().description
+    </div>
+    <div class="stats">        
+        <ul>
+            <li><div><p><b>@Model.scribble.viewcount</b></p><p>Views</p></div></li>
+            <li><div><p><b><span id="likecount">@Model.scribble.likecount</span></b></p><p>Likes</p></div></li>
+            <li><div id="commentcount"><p><b>0</b></p><p>Comments</p></div></li>
+        </ul>
+    </div>
+</div>

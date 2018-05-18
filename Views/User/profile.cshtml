@@ -1,0 +1,37 @@
+﻿@model scribble.Controllers.UserController.UserControllerModel
+<div class="container left">
+    <div class="title-main">
+        <img src="/Users/@String.Join("",Model.user.id,".jpg")" class="author-icon-large left" />        
+        <div class="left">
+            <p class="titletext">@Model.user.firstname @Model.user.lastname</p>
+            <p class="smalltext">@Model.user.username</p>
+        </div>
+    </div>
+    <div class="row" style="padding-right:10px;">
+        <div id="box-container">
+        @foreach (scribble.Models.Scribble scribble in Model.scribbles)
+        {
+                <div class="scribble-box" onclick="jumpTo('/scribble/@scribble.id');">
+                    <div class="bg" style="background-image:url(/scribbles/t_@scribble.versions.First().filename); "></div>
+                    <div class="titlerow">
+                        <p>@scribble.title</p>
+                        @*<p class="smalltext">@scribble.likecount</p>*@
+                    </div>
+                </div>
+        }                      
+        </div>
+    </div>
+</div>
+<div class="sidebar right">
+    <div class="title">About @Model.user.firstname</div>
+    <div class="info">        
+         @Model.user.biography
+    </div>
+    <div class="stats">        
+        <ul>
+            <li><div><p><b>10</b></p><p>Followers</p></div></li>
+            <li><div><p><b>10</b></p><p>Following</p></div></li>
+        </ul>
+    </div>
+
+</div>
